@@ -19,43 +19,34 @@ warnings.filterwarnings('ignore')
 
 
 
-def add_noise_with_probability(event_log: EventLog, noise_probability: float) -> EventLog:
+def add_noise_with_probability(ui_log, noise_probability):
     """
-    Adds noise to an event log with a specified probability for each event.
+    Adds noise to a single UI log segment with a specified probability for each event.
     Noise is introduced by either removing an event or adding a new event.
     """
 
-    noisy_log = EventLog()
+    noisy_log = []
     # Collect all unique event templates for generating random new events
-    event_templates = [deepcopy(event) for trace in event_log for event in trace]
+    event_templates = [event.copy() for event in ui_log]
 
-    for trace in event_log:
-        noisy_trace = Trace(attributes=deepcopy(trace.attributes))  # Copy trace attributes
-        
-        i = 0  # Index for the event being processed in the original trace
-        while i < len(trace):
-            if random.random() < noise_probability:  # Decide whether to apply noise
-                if random.choice([True, False]):  # Remove the event
-                    # Skip this event by not copying it to noisy_trace
-                    i += 1  # Move to the next event
-                else:  # Add a new random event
-                    template_event = random.choice(event_templates)
-                    new_event = Event(deepcopy(template_event))
-                    
-                    # Adjust timestamp to ensure uniqueness
-                    if 'time:timestamp' in template_event:
-                        prev_time = noisy_trace[-1]['time:timestamp'] if noisy_trace else template_event['time:timestamp']
-                        next_time = trace[i]['time:timestamp'] if i < len(trace) else template_event['time:timestamp']
-                        new_event['time:timestamp'] = prev_time + (next_time - prev_time) / 2
-                    
-                    noisy_trace.append(new_event)  # Append the new event
-            else:
-                # Copy the current event to the noisy trace
-                noisy_trace.append(deepcopy(trace[i]))
-                i += 1  # Move to the next event
-        
-        # Append the modified trace to the noisy log
-        noisy_log.append(noisy_trace)
+    i = 0
+    while i < len(ui_log):
+        if random.random() < noise_probability:
+            if random.choice([True, False]):  # Remove the event
+                i += 1  # Skip this event
+            else:  # Add a new random event
+                template_event = random.choice(event_templates).copy()
+
+                # Adjust timestamp if present to maintain order
+                if 'time:timestamp' in template_event:
+                    prev_time = noisy_log[-1]['time:timestamp'] if noisy_log else template_event['time:timestamp']
+                    next_time = ui_log[i]['time:timestamp'] if i < len(ui_log) else template_event['time:timestamp']
+                    template_event['time:timestamp'] = prev_time + (next_time - prev_time) / 2
+
+                noisy_log.append(template_event)
+        else:
+            noisy_log.append(ui_log[i].copy())
+            i += 1
 
     return noisy_log
 
