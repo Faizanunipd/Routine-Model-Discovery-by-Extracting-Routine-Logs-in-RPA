@@ -8,14 +8,6 @@ This repository presents a methodology to extract routine logs from unsegmented 
 ## 📋 Table of Contents
 
 - [Overview](#overview)
-- [Methodology](#methodology)
-  - [Step 1: Log Preparation and Unsegmentation](#step-1-log-preparation-and-unsegmentation)
-  - [Step 2: Segmentation](#step-2-segmentation)
-  - [Step 3: Activity Vector Encoding](#step-3-activity-vector-encoding)
-  - [Step 4: Clustering](#step-4-clustering)
-  - [Step 5: Routine Pattern Extraction](#step-5-routine-pattern-extraction)
-  - [Step 6: Evaluation](#step-6-evaluation)
-- [Example](#example)
 - [Dependencies](#dependencies)
 - [Usage](#usage)
 
